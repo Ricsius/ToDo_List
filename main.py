@@ -1,13 +1,26 @@
 def show_todo_list():
-  for i in range(len(todo_list)):
-      task = todo_list[i].capitalize()
+  for i, task in enumerate(todo_list):
+      task = task.capitalize()
       print(f"{i + 1}. {task}")
 
+def input_task_number(prompt):
+    show_todo_list()
+
+    number = int(input(prompt))
+    index = number - 1
+
+    if(index in range(len(todo_list))):
+        return index
+    else:
+        print(invalid_task_number_error)
+        return -1
+
 todo_list = []
-user_prompt = "Type add, show, edit or exit: "
+user_prompt = "Type add, show, edit, complete or exit: "
 task_prompt = "Enter a task: "
-task_number_prompt = "Number of the task to the edit: "
+task_edit_prompt = "Number of the task to edit: "
 task_modify_prompt = "Enter new task: "
+task_complete_prompt = "Number of the task to complete: "
 invalid_task_number_error = "Invalid task number!"
 
 while True:
@@ -20,16 +33,16 @@ while True:
         case "show":
             show_todo_list()
         case "edit":
-            show_todo_list()
+            index = input_task_number(task_edit_prompt)
 
-            number = int(input(task_number_prompt))
-            index = number - 1
-
-            if(index in range(len(todo_list))):
+            if(index > -1):
                 modified_task = input(task_modify_prompt)
                 todo_list[index] = modified_task
-            else:
-                print(invalid_task_number_error)
+        case "complete":
+            index = input_task_number(task_complete_prompt)
+
+            if(index > -1):
+                todo_list.pop(index)
         case "exit":
             break
         case unknown_action:
