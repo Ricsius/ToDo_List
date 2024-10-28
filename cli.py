@@ -1,4 +1,5 @@
 import modules.todo_list_logic as todo_list_logic
+import time
 
 todo_list = []
 user_prompt = "Type add, show, edit, complete or exit: "
@@ -11,6 +12,9 @@ def show_todo_list():
       print(f"{i + 1}. {task}")
 
 todo_list = todo_list_logic.read_todo_list()
+now = time.strftime("%Y-%m-%d %H:%M")
+
+print(f"It is: {now}")
 
 while True:
     user_action = input(user_prompt).strip()

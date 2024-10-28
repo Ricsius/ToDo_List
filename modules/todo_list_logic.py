@@ -1,22 +1,22 @@
 import os.path
 
-todo_list_path = "todo_list.txt"
+TODO_LIST_PATH = "todo_list.txt"
 
 def process_task(task):
     return task.capitalize().strip()
 
 def read_todo_list():
-    if not os.path.isfile(todo_list_path):
+    if not os.path.isfile(TODO_LIST_PATH):
         return []
 
-    with open(todo_list_path, "r") as file:
+    with open(TODO_LIST_PATH, "r") as file:
         ret = file.readlines()
         ret = [process_task(task) for task in ret]
 
     return ret
 
 def save_todo_list(todo_list):
-    with open(todo_list_path, "w") as file:
+    with open(TODO_LIST_PATH, "w") as file:
         for task in todo_list:
             file.write(f"{task}\n")
 
