@@ -1,57 +1,88 @@
 import modules.todo_list_logic as todo_list_logic
 import FreeSimpleGUI as sg
+import time
 
-task_input_key = "task"
-task_list_key = "task_list"
-new_task_button_label = "Add task"
-edit_task_button_label = "Edit task"
+CLOCK_KEY = "clock"
+CLOCK_FORMAT = "%b %d, %Y %H:%M:%S"
+TASK_INPUT_KEY = "task"
+TASK_LIST_KEY = "task_list"
+NEW_TASK_BUTTON_LABEL = "Add task"
+EDIT_TASK_BUTTON_LABEL = "Edit task"
+COMPLETE_TASK_BUTTON_LABEL = "Complete task"
+EXIT_BUTTON_LABEL = "Exit"
+FONT = ("Helvetica", 20)
+EMPTY_TASK_MESSAGE = "Please type in a task first!"
+NO_TASK_SELECTED_MESSAGE = "Please select a task first!"
 
 def init_ui(todo_list):
+    sg.theme("DarkTeal12")
+
+    clock = sg.Text(time.strftime(CLOCK_FORMAT), key=CLOCK_KEY)
     add_label = sg.Text("Type in a task")
-    input_box = sg.InputText(tooltip="Type in a task", key=task_input_key)
-    add_button = sg.Button(new_task_button_label)
-    list_box = sg.Listbox(values=todo_list, key=task_list_key, enable_events=True, size=[45,10])
-    edit_button = sg.Button(edit_task_button_label)
+    input_box = sg.InputText(tooltip="Type in a task", key=TASK_INPUT_KEY)
+    add_button = sg.Button(NEW_TASK_BUTTON_LABEL)
+    list_box = sg.Listbox(values=todo_list, key=TASK_LIST_KEY, enable_events=True, size=[45,10])
+    edit_button = sg.Button(EDIT_TASK_BUTTON_LABEL)
+    complete_button = sg.Button(COMPLETE_TASK_BUTTON_LABEL)
+    exit_button = sg.Button(EXIT_BUTTON_LABEL)
 
     layout = [
+        [clock],
         [add_label],
         [input_box, add_button],
-        [list_box, edit_button],
+        [list_box, edit_button, complete_button],
+        [exit_button]
         ]
     ret = sg.Window("To-Do App", 
                     layout=layout, 
-                    font=("Helvetica", 20))
+                    font=FONT)
     return ret
 
-def refresh_task_list(window, values):
-    window[task_list_key].update(values=values)
 
 todo_list = todo_list_logic.read_todo_list()
 window = init_ui(todo_list)
 
 while True:
-    event, values = window.read()
-    
-    if event == new_task_button_label:
-        todo_list_logic.add_task(todo_list, values[task_input_key])
-        refresh_task_list(window, todo_list)
-        window[task_input_key].update(value="")
-    elif event == task_list_key:
-        window[task_input_key].update(value=values[task_list_key])
-    elif event == edit_task_button_label:
-        no_task_selected = len(values[task_list_key]) == 0
+    event, values = window.read(timeout=200)
+    print(event)
+    window[CLOCK_KEY].update(value=time.strftime(CLOCK_FORMAT))
 
-        if no_task_selected:
+    if event == NEW_TASK_BUTTON_LABEL:
+        if not any(values[TASK_INPUT_KEY]):
+            sg.popup(EMPTY_TASK_MESSAGE, font=FONT)
             continue
 
-        task_to_edit = values[task_list_key][0]
-        modified_task = values[task_input_key]
-        index = todo_list.index(task_to_edit)
+        todo_list_logic.add_task(todo_list, values[TASK_INPUT_KEY])
+        window[TASK_LIST_KEY].update(values=todo_list)
+        window[TASK_INPUT_KEY].update(value="")
+    elif event == TASK_LIST_KEY:
+        window[TASK_INPUT_KEY].update(value=values[TASK_LIST_KEY][0])
+    elif event == EDIT_TASK_BUTTON_LABEL:
+        if not any(values[TASK_LIST_KEY]):
+            sg.popup(NO_TASK_SELECTED_MESSAGE, font=FONT)
+            continue
+
+        if not any(values[TASK_INPUT_KEY]):
+            sg.popup(EMPTY_TASK_MESSAGE, font=FONT)
+            continue
+
+        modified_task = values[TASK_INPUT_KEY]
+        index = todo_list.index(values[TASK_LIST_KEY][0])
 
         todo_list_logic.edit_task(todo_list, index, modified_task)
-        refresh_task_list(window, todo_list)
-        window[task_input_key].update(value="")
-    elif event == sg.WIN_CLOSED:
+        window[TASK_LIST_KEY].update(values=todo_list)
+        window[TASK_INPUT_KEY].update(value="")
+    elif event == COMPLETE_TASK_BUTTON_LABEL:
+        if not any(values[TASK_LIST_KEY]):
+            sg.popup(NO_TASK_SELECTED_MESSAGE, font=FONT)
+            continue
+
+        index = todo_list.index(values[TASK_LIST_KEY][0])
+
+        todo_list_logic.complete_task(todo_list, index)
+        window[TASK_LIST_KEY].update(values=todo_list)
+        window[TASK_INPUT_KEY].update(value="")
+    elif event == sg.WIN_CLOSED or event == EXIT_BUTTON_LABEL:
         break
 
 window.close()
