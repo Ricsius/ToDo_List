@@ -44,7 +44,6 @@ window = init_ui(todo_list)
 
 while True:
     event, values = window.read(timeout=200)
-    print(event)
     window[CLOCK_KEY].update(value=time.strftime(CLOCK_FORMAT))
 
     if event == NEW_TASK_BUTTON_LABEL:
