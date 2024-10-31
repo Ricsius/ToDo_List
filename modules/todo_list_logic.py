@@ -12,7 +12,8 @@ def read_todo_list():
     with open(TODO_LIST_PATH, "r") as file:
         ret = file.readlines()
         ret = [process_task(task) for task in ret]
-
+        ret = list(filter(lambda l : any(l), ret))
+        
     return ret
 
 def save_todo_list(todo_list):

@@ -44,6 +44,10 @@ window = init_ui(todo_list)
 
 while True:
     event, values = window.read(timeout=200)
+
+    if event == sg.WINDOW_CLOSED or event == EXIT_BUTTON_LABEL:
+        break
+
     window[CLOCK_KEY].update(value=time.strftime(CLOCK_FORMAT))
 
     if event == NEW_TASK_BUTTON_LABEL:
@@ -81,7 +85,5 @@ while True:
         todo_list_logic.complete_task(todo_list, index)
         window[TASK_LIST_KEY].update(values=todo_list)
         window[TASK_INPUT_KEY].update(value="")
-    elif event == sg.WIN_CLOSED or event == EXIT_BUTTON_LABEL:
-        break
 
 window.close()
