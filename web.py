@@ -17,10 +17,10 @@ st.subheader("Gather your tasks!")
 st.write("Tasks")
 
 for index, task in enumerate(todo_list):
-    checkbox = st.checkbox(task, key=task)
+    checkbox = st.checkbox(task, key=f"{index}_{task}")
 
     if(checkbox):
-        del st.session_state[task]
+        del st.session_state[f"{index}_{task}"]
         todo_list_logic.complete_task(todo_list, index)
         st.rerun()
 
