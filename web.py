@@ -49,12 +49,12 @@ for index, task in enumerate(st.session_state[TODO_LIST_KEY]):
         with col2:
             edit_button = st.button("Edit", key=f"{index}_Edit")
 
-        if(checkbox):
+        if checkbox:
             del st.session_state[key]
             todo_list_logic.complete_task(st.session_state[TODO_LIST_KEY], index)
             st.rerun()
 
-        if(edit_button):
+        if edit_button:
             st.session_state[TASK_TO_EDIT_KEY] = key
             st.rerun()
         
